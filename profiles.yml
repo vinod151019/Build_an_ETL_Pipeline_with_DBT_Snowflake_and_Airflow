@@ -1,0 +1,32 @@
+Netflix:
+  outputs:
+    default:
+      account: 
+      database: PROD
+      password: 
+      role: ACCOUNTADMIN
+      schema: DBT_RAW
+      threads: 4
+      type: snowflake
+      user: 
+      warehouse: COMPUTE_WH
+    dev:
+      account: 
+      database: PROD
+      password: 
+      role: ACCOUNTADMIN
+      schema: DBT_TRANSFORM
+      threads: 4
+      type: snowflake
+      user: 
+      warehouse: COMPUTE_WH
+    prod:
+      account: 
+      database: PROD
+      password: 
+      role: ACCOUNTADMIN
+      schema: DBT_PROD
+      threads: 4
+      type: snowflake
+      user: 
+      warehouse: COMPUTE_WH

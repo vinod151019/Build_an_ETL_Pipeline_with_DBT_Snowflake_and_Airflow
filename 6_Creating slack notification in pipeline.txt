@@ -1,0 +1,118 @@
+
+Create a folder inside dags as alerting
+
+and create a script as by the name of slack_alert.py as below 
+
+#############################################################################
+"""
+Slack Alerting Function would be implemented here.
+"""
+#############################################################################
+# Imports
+
+# Importing the base book
+from airflow.hooks.base_hook import BaseHook
+# Importing the Slack Webhook
+from airflow.contrib.operators.slack_webhook_operator import SlackWebhookOperator
+# importing the common settings
+# Get the System Environment
+
+
+#############################################################################
+
+
+def task_fail_slack_alert(dag):
+    """
+    This callback function would be called if any of the tasks fail in airflow DAG
+    which would inturn send a message to a slack channel.
+    :param context:
+    :return:
+    """
+
+    # Create the slack connection and get the web token
+    slack_web_hook_token = BaseHook.get_connection('Slack_Connection').password
+
+    # prepare the message which needs to be send to slack
+    slack_msg = """
+            :red_circle: {dag} Workflow Failed at task {task}
+            *Task*: {task}  
+            *Dag*: {dag} 
+            *Execution Time*: {exec_date}  
+            """.format(
+            task=context.get('task_instance').task_id,
+            dag=context.get('task_instance').dag_id,
+            exec_date=context.get('execution_date')
+
+        )
+
+
+    # Send the actual message to Slack.
+    failed_alert = SlackWebhookOperator(
+        task_id='SLACK_FAILED_ALERT',
+        http_conn_id='Slack_Connection',
+        webhook_token=slack_web_hook_token,
+        message=slack_msg)
+
+    # Execute the Slack WebHook Dag
+
+
+
+def task_success_slack_alert(dag):
+    """
+    Send Slack Success messages.
+    :param dag: Dag to which this task needs to be attached to.
+    :return:
+    """
+
+    # Create the slack connection and get the web token
+    slack_web_hook_token = BaseHook.get_connection('Slack_Connection').password
+
+    # prepare the message which needs to be send to slack
+    slack_msg = """
+                :green-circle: {{ task_instance.dag_id }} Workflow completed successfully.
+                *Task*: {{ task_instance.task_id }} 
+                *Dag*: {{ task_instance.dag_id }}
+                *Execution Time*: {{ execution_date }} 
+                """
+
+    # Send the actual message to Slack.
+    task_success_alert = SlackWebhookOperator(
+        task_id='SLACK_SUCCESS_ALERT',
+        http_conn_id='Slack_Connection',
+        webhook_token=slack_web_hook_token,
+        on_failure_callback=None,
+        message=slack_msg,
+        dag=dag)
+
+    # Execute the Slack WebHook Dag
+    return task_success_alert
+	
+	
+##End of Script
+
+Make changes to the DAG as 
+
+from alerting.slack_alert import task_success_slack_alert
+
+slack_success_alert=task_success_slack_alert(dag=dag)
+
+
+curl -X POST -H 'Content-type: application/json' --data '{"text":"Hello, World!"}' https://hooks.slack.com/services/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
+
+Create a slack workspace and a slack channel
+
+Create an app in slack using 
+https://api.slack.com/apps
+
+Activate incoming webhooks and get the token and url by adding it to a slack channel
+
+Try the sample curl command to check if the message is coming to channel or not
+
+Create an airflow connection with type http
+Name it Slack_Connection
+
+Host as https://hooks.slack.com/services/
+
+The token as the password and test it out.
+
+Post this create a python script as below in the alerting folder.

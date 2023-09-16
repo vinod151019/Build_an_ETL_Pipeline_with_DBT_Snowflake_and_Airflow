@@ -1,0 +1,26 @@
+Alerting pipeline failure using Slack
+
+First we need to write a custom the call back notification function. This would be an independent python script in the folder
+/home/airflow/airflow-code-demo/dags/alerting Create this file as callback_script.py
+
+as
+
+import sys
+sys.path.append('/home/airflow/airflow-code-demo/dags')
+
+from alerting.slack_alert import task_fail_slack_alert
+# The callback function
+
+def callback_function(context):
+	"Custom Call back function to have alerts in slack"
+	task_fail_slack_alert(context=context)
+	
+Now go to the main DAG Netflix_Data_Analytics.py and add the below components in the default arguments of the DAG.
+
+'on_failure_callback': callback_function
+
+Also add the import statement at the beginning
+
+from alerting.callback_script import callback_function
+
+

@@ -1,0 +1,37 @@
+Creating other airflow tasks in the final tables
+
+{{ config(
+    tags=[var('TAG_FACT')]
+) }}
+
+add the TAG_FACT with value as FACT in the final fact and dimension models
+
+
+run_fact_dim_models = BashOperator(
+    task_id='run_fact_dim_models',
+    bash_command='/home/airflow/dbt-env/bin/dbt run --model tag:"FACT" --project-dir /home/airflow/dbt-code --profile Netflix --target prod',
+    dag=dag
+)
+
+Add testing tag in the test models 
+
+
+
+add the TAG_TESTING with value as TEST in the dbt test cases
+
+{{ config(
+    tags=[var('TAG_TEST')]
+) }}
+
+run_test_cases = BashOperator(
+    task_id='run_test_cases',
+    bash_command='/home/airflow/dbt-env/bin/dbt test --model tag:"TEST" --project-dir /home/airflow/dbt-code --profile Netflix --target prod',
+    dag=dag
+)
+
+
+
+/home/airflow/dbt-env/bin/dbt run --model tag:"TEST" --project-dir /home/airflow/dbt-code --profile Netflix --target prod
+
+
+

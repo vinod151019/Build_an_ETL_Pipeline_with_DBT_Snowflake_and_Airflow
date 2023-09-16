@@ -1,0 +1,96 @@
+sudo apt-get update
+sudo apt-get install python3-psycopg2
+sudo apt-get install postgresql postgresql-contrib
+
+sudo adduser airflow
+sudo usermod -aG sudo airflow
+su - airflow
+
+All installations are to be done using airflow user
+
+sudo apt-get install python3-psycopg2
+
+sudo apt-get install postgresql postgresql-contrib
+
+sudo -u postgres psql
+
+CREATE USER airflow PASSWORD 'airflow';
+
+CREATE DATABASE airflow;
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA PUBLIC TO airflow;
+
+\q
+
+sudo vi /etc/postgresql/14/main/pg_hba.conf -- This changes with the version of postgres so we should check the installed one using cd
+
+change the line
+# IPv4 local connections:
+host    all             all             127.0.0.1/32         md5
+to 
+host    all             all             0.0.0.0/0            trust
+
+sudo vi /etc/postgresql/14/main/postgresql.conf
+
+Uncomment
+#listen_addresses = ‘localhost’ # what IP address(es) to listen on
+to
+listen_addresses = ‘*’ # what IP address(es) to listen on
+
+save the file and restart postgres using
+
+sudo service postgresql restart
+
+next to install airflow
+
+sudo su - airflow
+
+sudo apt-get install python3-pip
+pip3 install virtualenv
+
+virtualenv dbt-env --creating the virtual environment using This doesn't work for 3.10
+Please use the command 
+
+sudo apt install python3.10-venv
+source dbt-env/bin/activate to activate the dbt-env virtual environment
+
+
+
+
+sudo python3 -m pip install apache-airflow[postgres,s3,aws,slack]
+
+
+start airflow db with airflow db init
+create airflow user, password and role 
+
+airflow users create --username admin --password admin --firstname Aditya --lastname admin --role Admin --email admin@airflow.com
+
+In the airflow.cfg file change
+sqlite:////home/airflow/airflow/airflow.db
+to 
+
+make configuration changes to airflow.cfg files for dags_folder parameter and load_examples parameter
+
+sql_alchemy_conn = postgresql+psycopg2://airflow:airflow@localhost:5432/airflow
+
+Installing git into machine
+sudo apt install git
+git --version
+
+git clone <<repo url>>
+
+
+
+start airflow webserver and scheduler with
+airflow webserver &
+airflow scheduler &
+
+
+
+
+
+
+
+
+
+
